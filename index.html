@@ -3,71 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.O.E. DMO OPERATOR DASHBOARD</title>
+    <title>M.O.E. SPRINT COMMANDER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #050505; color: #e5e5e5; font-family: 'Space Grotesk', sans-serif; }
-        .stat-card { border: 1px solid #333; background: #0a0a0a; padding: 1.5rem; }
+        .brutalist-card { border: 2px solid #333; background: #0a0a0a; padding: 1.5rem; }
+        .brutalist-btn { border: 2px solid #333; transition: all 0.1s; font-weight: 700; text-transform: uppercase; }
+        .brutalist-btn:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="p-4 md:p-12">
+<body class="p-4 md:p-12 max-w-4xl mx-auto">
 
     <!-- Header -->
-    <header class="max-w-4xl mx-auto mb-10 border-b border-gray-800 pb-6">
-        <h1 class="text-4xl font-black uppercase text-white tracking-tighter">M.O.E. DMO Tracker</h1>
-        <p class="text-green-500 font-bold uppercase text-xs">Mathematics of Detachment: 10 Rejections = 1 Conversion</p>
+    <header class="mb-10 border-b border-gray-800 pb-6">
+        <h1 class="text-4xl font-black uppercase text-white tracking-tighter">S-Rank DMO Sprint</h1>
+        <p class="text-green-500 font-bold uppercase text-xs mt-2">100 : 10 : 5 : 1 // Math of Detachment</p>
     </header>
 
-    <!-- Metrics Dashboard -->
-    <main class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
-        
-        <!-- Gate 1: Counter -->
-        <section class="stat-card">
-            <h2 class="text-sm font-bold uppercase mb-4 text-gray-500">Street Intercepts (KL City Centre)</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="updateDMO('rejects')" class="bg-red-900/20 border border-red-800 p-6 text-center hover:bg-red-900/40 transition">
-                    <div id="count-rejects" class="text-4xl font-black text-red-500">0</div>
-                    <div class="text-[10px] uppercase mt-1">Rejections</div>
-                </button>
-                <button onclick="updateDMO('conversions')" class="bg-green-900/20 border border-green-800 p-6 text-center hover:bg-green-900/40 transition">
-                    <div id="count-conversions" class="text-4xl font-black text-green-500">0</div>
-                    <div class="text-[10px] uppercase mt-1">Conversions</div>
-                </button>
-            </div>
-        </section>
+    <!-- Tracker -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="brutalist-card text-center">
+            <div id="count-prospects" class="text-4xl font-black">0</div>
+            <div class="text-[9px] uppercase tracking-widest mt-2">Prospects</div>
+            <button onclick="update('prospects')" class="brutalist-btn w-full mt-4 bg-gray-800 py-2">+</button>
+        </div>
+        <div class="brutalist-card text-center">
+            <div id="count-guests" class="text-4xl font-black">0</div>
+            <div class="text-[9px] uppercase tracking-widest mt-2">Guests</div>
+            <button onclick="update('guests')" class="brutalist-btn w-full mt-4 bg-gray-800 py-2">+</button>
+        </div>
+        <div class="brutalist-card text-center">
+            <div id="count-customers" class="text-4xl font-black">0</div>
+            <div class="text-[9px] uppercase tracking-widest mt-2">Customers</div>
+            <button onclick="update('customers')" class="brutalist-btn w-full mt-4 bg-gray-800 py-2">+</button>
+        </div>
+        <div class="brutalist-card text-center border-green-900">
+            <div id="count-active" class="text-4xl font-black text-green-500">0</div>
+            <div class="text-[9px] uppercase tracking-widest mt-2 text-green-500">Active</div>
+            <button onclick="update('active')" class="brutalist-btn w-full mt-4 bg-green-900 py-2">+</button>
+        </div>
+    </section>
 
-        <!-- Gate 2: Ratios -->
-        <section class="stat-card flex flex-col justify-center">
-            <h2 class="text-sm font-bold uppercase mb-4 text-gray-500">Conversion Velocity</h2>
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-xs">Current Ratio:</span>
-                <span id="ratio-display" class="font-bold text-white">0:1</span>
-            </div>
-            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div id="ratio-bar" class="h-full bg-green-500 w-0 transition-all"></div>
-            </div>
-            <p class="text-[10px] text-gray-600 mt-4 uppercase">Target: Reach 10:1 to validate conversion pipeline.</p>
-        </section>
-    </main>
+    <!-- Reflection Journal -->
+    <section class="brutalist-card mb-8">
+        <h2 class="text-sm font-bold uppercase mb-4 text-gray-500">Daily Reflection Journal</h2>
+        <textarea id="journal" class="w-full bg-black border border-gray-700 p-4 h-32 text-sm focus:outline-none focus:border-green-500" placeholder="What friction did you encounter today? How did you solve it?"></textarea>
+        <button onclick="saveJournal()" class="mt-4 w-full brutalist-btn bg-white text-black py-3 hover:bg-gray-200">Save Journal Entry</button>
+    </section>
+
+    <!-- Controls -->
+    <div class="flex gap-4">
+        <button onclick="resetSprint()" class="brutalist-btn bg-red-900/20 text-red-500 px-6 py-2 border-red-800">Reset Sprint</button>
+        <p id="last-updated" class="text-[10px] text-gray-600 uppercase flex items-center tracking-widest"></p>
+    </div>
 
     <script>
-        let dmo = JSON.parse(localStorage.getItem('moe_dmo')) || { rejects: 0, conversions: 0 };
+        let state = JSON.parse(localStorage.getItem('moe_sprint')) || { 
+            prospects: 0, guests: 0, customers: 0, active: 0, journal: "", date: "" 
+        };
 
-        function updateDMO(type) {
-            dmo[type]++;
-            localStorage.setItem('moe_dmo', JSON.stringify(dmo));
+        function update(key) {
+            state[key]++;
+            state.date = new Date().toLocaleDateString();
+            save();
+        }
+
+        function saveJournal() {
+            state.journal = document.getElementById('journal').value;
+            save();
+            alert("Entry Saved.");
+        }
+
+        function save() {
+            localStorage.setItem('moe_sprint', JSON.stringify(state));
             render();
         }
 
+        function resetSprint() {
+            if(confirm("Wipe sprint data?")) {
+                state = { prospects: 0, guests: 0, customers: 0, active: 0, journal: "", date: "" };
+                save();
+            }
+        }
+
         function render() {
-            document.getElementById('count-rejects').innerText = dmo.rejects;
-            document.getElementById('count-conversions').innerText = dmo.conversions;
-            
-            const ratio = dmo.conversions > 0 ? (dmo.rejects / dmo.conversions).toFixed(1) : dmo.rejects;
-            document.getElementById('ratio-display').innerText = `${ratio}:1`;
-            
-            const percentage = Math.min((dmo.conversions / 10) * 100, 100);
-            document.getElementById('ratio-bar').style.width = percentage + '%';
+            document.getElementById('count-prospects').innerText = state.prospects;
+            document.getElementById('count-guests').innerText = state.guests;
+            document.getElementById('count-customers').innerText = state.customers;
+            document.getElementById('count-active').innerText = state.active;
+            document.getElementById('journal').value = state.journal;
+            document.getElementById('last-updated').innerText = "Last Updated: " + (state.date || "None");
         }
 
         render();
