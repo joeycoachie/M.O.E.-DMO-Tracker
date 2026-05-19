@@ -3,98 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.O.E. SPRINT COMMANDER</title>
+    <title>M.O.E. SPRINT COMMANDER // NCIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: #e5e5e5; font-family: 'Space Grotesk', sans-serif; }
-        .brutalist-card { border: 2px solid #333; background: #0a0a0a; padding: 1.5rem; }
-        .brutalist-btn { border: 2px solid #333; transition: all 0.1s; font-weight: 700; text-transform: uppercase; }
-        .brutalist-btn:active { transform: scale(0.98); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap');
+        body { background-color: #050505; color: #ffffff; font-family: 'Inter', sans-serif; }
+        .surface { background-color: #0a0a0a; border: 1px solid #222222; }
+        .mono { font-family: 'Space Mono', monospace; }
+        .text-secondary { color: #888888; }
+        .border-line { border-color: #333333; }
+        button { border: 1px solid #333333; transition: all 0.2s; text-transform: uppercase; }
+        button:hover { border-color: #ffffff; }
     </style>
 </head>
-<body class="p-4 md:p-12 max-w-4xl mx-auto">
+<body class="p-8 md:p-16 max-w-2xl mx-auto">
 
-    <!-- Header -->
-    <header class="mb-10 border-b border-gray-800 pb-6">
-        <h1 class="text-4xl font-black uppercase text-white tracking-tighter">S-Rank DMO Sprint</h1>
-        <p class="text-green-500 font-bold uppercase text-xs mt-2">100 : 10 : 5 : 1 // Math of Detachment</p>
+    <header class="mb-12">
+        <h1 class="text-xl font-bold tracking-tighter uppercase">Sprint Commander</h1>
+        <div id="ratio-display" class="mono text-[9px] text-blue-500 tracking-widest mt-1 uppercase">RATIO (REJ:CONV): 0:1</div>
     </header>
 
-    <!-- Tracker -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="brutalist-card text-center">
-            <div id="count-prospects" class="text-4xl font-black">0</div>
-            <div class="text-[9px] uppercase tracking-widest mt-2">Prospects</div>
-            <button onclick="update('prospects')" class="brutalist-btn w-full mt-4 bg-gray-800 py-2">+</button>
-        </div>
-        <div class="brutalist-card text-center">
-            <div id="count-guests" class="text-4xl font-black">0</div>
-            <div class="text-[9px] uppercase tracking-widest mt-2">Guests</div>
-            <button onclick="update('guests')" class="brutalist-btn w-full mt-4 bg-gray-800 py-2">+</button>
-        </div>
-        <div class="brutalist-card text-center">
-            <div id="count-customers" class="text-4xl font-black">0</div>
-            <div class="text-[9px] uppercase tracking-widest mt-2">Customers</div>
-            <button onclick="update('customers')" class="brutalist-btn w-full mt-4 bg-gray-800 py-2">+</button>
-        </div>
-        <div class="brutalist-card text-center border-green-900">
-            <div id="count-active" class="text-4xl font-black text-green-500">0</div>
-            <div class="text-[9px] uppercase tracking-widest mt-2 text-green-500">Active</div>
-            <button onclick="update('active')" class="brutalist-btn w-full mt-4 bg-green-900 py-2">+</button>
-        </div>
-    </section>
+    <main class="space-y-6">
+        <!-- DMO Layer -->
+        <section class="surface p-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <h2 class="text-[9px] uppercase tracking-widest text-secondary">Prospects</h2>
+                    <div id="c-prospects" class="text-2xl font-bold">0</div>
+                    <div class="flex gap-1">
+                        <button onclick="op('prospects', -1)" class="w-full py-1 text-[8px]">-</button>
+                        <button onclick="op('prospects', 1)" class="w-full py-1">+</button>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-[9px] uppercase tracking-widest text-secondary">Rejections</h2>
+                    <div id="c-rejections" class="text-2xl font-bold text-red-500">0</div>
+                    <div class="flex gap-1">
+                        <button onclick="op('rejections', -1)" class="w-full py-1 text-[8px]">-</button>
+                        <button onclick="op('rejections', 1)" class="w-full py-1">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-line grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <h2 class="text-[9px] uppercase tracking-widest text-secondary">Guests</h2>
+                    <div id="c-guests" class="text-2xl font-bold">0</div>
+                    <button onclick="op('guests', 1)" class="w-full py-1 text-[8px]">ADD GUEST</button>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-[9px] uppercase tracking-widest text-secondary">Active</h2>
+                    <div id="c-active" class="text-2xl font-bold text-[#4CAF50]">0</div>
+                    <button onclick="op('active', 1)" class="w-full py-1 text-[8px]">CONVERT</button>
+                </div>
+            </div>
+        </section>
 
-    <!-- Reflection Journal -->
-    <section class="brutalist-card mb-8">
-        <h2 class="text-sm font-bold uppercase mb-4 text-gray-500">Daily Reflection Journal</h2>
-        <textarea id="journal" class="w-full bg-black border border-gray-700 p-4 h-32 text-sm focus:outline-none focus:border-green-500" placeholder="What friction did you encounter today? How did you solve it?"></textarea>
-        <button onclick="saveJournal()" class="mt-4 w-full brutalist-btn bg-white text-black py-3 hover:bg-gray-200">Save Journal Entry</button>
-    </section>
+        <!-- Ascension Layer -->
+        <section class="surface p-6 border-blue-900/30">
+            <h2 class="text-[9px] font-bold uppercase mb-4 tracking-widest text-blue-500">Ascension Logic: 2K VP Trigger</h2>
+            <div class="w-full bg-[#050505] h-2 border border-line">
+                <div id="ascension-bar" class="h-full bg-blue-600 w-0"></div>
+            </div>
+            <p id="ascension-text" class="text-[9px] text-secondary mt-2">0 / 2,000 VP Progress</p>
+        </section>
 
-    <!-- Controls -->
-    <div class="flex gap-4">
-        <button onclick="resetSprint()" class="brutalist-btn bg-red-900/20 text-red-500 px-6 py-2 border-red-800">Reset Sprint</button>
-        <p id="last-updated" class="text-[10px] text-gray-600 uppercase flex items-center tracking-widest"></p>
-    </div>
+        <!-- Reflection -->
+        <section class="surface p-6">
+            <h2 class="text-[9px] font-bold uppercase mb-4 tracking-widest text-secondary">Reflection Log</h2>
+            <textarea id="log" class="w-full bg-[#050505] border border-line p-3 h-24 text-xs focus:outline-none" placeholder="Cadence/Notes..."></textarea>
+            <button onclick="sync()" class="mt-4 w-full py-2 text-[9px] uppercase font-bold tracking-widest">Copy Row to Sheets</button>
+            <button onclick="wipe()" class="mt-2 w-full py-1 text-[8px] uppercase text-secondary tracking-widest">Reset Sprint</button>
+        </section>
+    </main>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('moe_sprint')) || { 
-            prospects: 0, guests: 0, customers: 0, active: 0, journal: "", date: "" 
+        let state = JSON.parse(localStorage.getItem('moe_v3')) || { 
+            prospects: 0, rejections: 0, guests: 0, active: 0, log: "", vp: 0 
         };
-
-        function update(key) {
-            state[key]++;
-            state.date = new Date().toLocaleDateString();
-            save();
+        
+        function op(k, d) { state[k] = Math.max(0, state[k] + d); render(); save(); }
+        
+        function sync() { 
+            state.log = document.getElementById('log').value; 
+            const d = new Date().toISOString().split('T')[0];
+            const row = `${d}\t${state.prospects}\t${state.rejections}\t${state.guests}\t${state.active}\t${state.log}`;
+            navigator.clipboard.writeText(row).then(() => alert("Data copied for Google Sheets"));
+            save(); 
         }
-
-        function saveJournal() {
-            state.journal = document.getElementById('journal').value;
-            save();
-            alert("Entry Saved.");
-        }
-
-        function save() {
-            localStorage.setItem('moe_sprint', JSON.stringify(state));
-            render();
-        }
-
-        function resetSprint() {
-            if(confirm("Wipe sprint data?")) {
-                state = { prospects: 0, guests: 0, customers: 0, active: 0, journal: "", date: "" };
-                save();
-            }
-        }
-
+        
+        function wipe() { if(confirm("Clear session?")) { localStorage.removeItem('moe_v3'); location.reload(); } }
+        function save() { localStorage.setItem('moe_v3', JSON.stringify(state)); }
+        
         function render() {
-            document.getElementById('count-prospects').innerText = state.prospects;
-            document.getElementById('count-guests').innerText = state.guests;
-            document.getElementById('count-customers').innerText = state.customers;
-            document.getElementById('count-active').innerText = state.active;
-            document.getElementById('journal').value = state.journal;
-            document.getElementById('last-updated').innerText = "Last Updated: " + (state.date || "None");
+            document.getElementById('c-prospects').innerText = state.prospects;
+            document.getElementById('c-rejections').innerText = state.rejections;
+            document.getElementById('c-guests').innerText = state.guests;
+            document.getElementById('c-active').innerText = state.active;
+            
+            const r = state.active > 0 ? (state.rejections / state.active).toFixed(1) : state.rejections;
+            document.getElementById('ratio-display').innerText = `RATIO (REJ:CONV): ${r}:1`;
+            
+            // Ascension Logic Gate (2000 VP Target)
+            const vp = state.active * 500; // Simulated VP scaling per conversion
+            const progress = Math.min((vp / 2000) * 100, 100);
+            document.getElementById('ascension-bar').style.width = progress + '%';
+            document.getElementById('ascension-text').innerText = `${vp} / 2,000 VP Progress`;
+            document.getElementById('log').value = state.log;
         }
-
         render();
     </script>
 </body>
