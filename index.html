@@ -18,12 +18,26 @@
 </head>
 <body class="p-8 md:p-16 max-w-2xl mx-auto">
 
-    <header class="mb-12">
-        <h1 class="text-xl font-bold tracking-tighter uppercase">Sprint Commander</h1>
-        <div id="ratio-display" class="mono text-[9px] text-blue-500 tracking-widest mt-1 uppercase">RATIO (REJ:CONV): 0:1</div>
-    </header>
+    <!-- Step 0: Concierge Welcome -->
+    <div id="step-0" class="surface p-12 text-center animate-in fade-in duration-700">
+        <h2 class="text-4xl font-black italic uppercase mb-6">Welcome, Initiate.</h2>
+        <p class="text-secondary text-sm mb-10 leading-relaxed">
+            This gate is designed to ensure we are a perfect match for your goals. 
+            It only takes a moment to calibrate, and it ensures the Architect 
+            provides you with the exact protocol you need to succeed.
+        </p>
+        <button onclick="document.getElementById('step-0').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden')" 
+                class="bg-[#4CAF50] text-black px-12 py-4 font-bold uppercase tracking-widest hover:scale-105 transition-all">
+            Start Calibration
+        </button>
+    </div>
 
-    <main class="space-y-6">
+    <div id="main-app" class="hidden space-y-6">
+        <header class="mb-12">
+            <h1 class="text-xl font-bold tracking-tighter uppercase">Sprint Commander</h1>
+            <div id="ratio-display" class="mono text-[9px] text-blue-500 tracking-widest mt-1 uppercase">RATIO (REJ:CONV): 0:1</div>
+        </header>
+
         <!-- DMO Layer -->
         <section class="surface p-6">
             <div class="grid grid-cols-2 gap-4">
@@ -70,11 +84,16 @@
         <!-- Reflection -->
         <section class="surface p-6">
             <h2 class="text-[9px] font-bold uppercase mb-4 tracking-widest text-secondary">Reflection Log</h2>
+            <p class="text-secondary text-[10px] mb-4">Let's talk about your vision. Where do you want to be in 12 months, and what is currently holding you back from getting there?</p>
             <textarea id="log" class="w-full bg-[#050505] border border-line p-3 h-24 text-xs focus:outline-none" placeholder="Cadence/Notes..."></textarea>
             <button onclick="sync()" class="mt-4 w-full py-2 text-[9px] uppercase font-bold tracking-widest">Copy Row to Sheets</button>
             <button onclick="wipe()" class="mt-2 w-full py-1 text-[8px] uppercase text-secondary tracking-widest">Reset Sprint</button>
         </section>
-    </main>
+        
+        <footer class="text-center mt-8">
+            <p class="text-[8px] text-secondary uppercase tracking-widest">Curated for Human Performance Excellence // We only take on what we can guarantee.</p>
+        </footer>
+    </div>
 
     <script>
         let state = JSON.parse(localStorage.getItem('moe_v3')) || { 
@@ -103,8 +122,7 @@
             const r = state.active > 0 ? (state.rejections / state.active).toFixed(1) : state.rejections;
             document.getElementById('ratio-display').innerText = `RATIO (REJ:CONV): ${r}:1`;
             
-            // Ascension Logic Gate (2000 VP Target)
-            const vp = state.active * 500; // Simulated VP scaling per conversion
+            const vp = state.active * 500; 
             const progress = Math.min((vp / 2000) * 100, 100);
             document.getElementById('ascension-bar').style.width = progress + '%';
             document.getElementById('ascension-text').innerText = `${vp} / 2,000 VP Progress`;
